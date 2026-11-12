@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour, IDamagable
 
     public void Damage(int direction)
     {
-        FlashDamage();
+        StartCoroutine(FlashDamage()); 
     }
 
     IEnumerator FlashDamage()
