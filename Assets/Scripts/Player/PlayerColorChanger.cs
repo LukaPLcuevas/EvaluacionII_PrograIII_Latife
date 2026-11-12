@@ -13,7 +13,10 @@ public class PlayerColorChanger : MonoBehaviour
     {
         if (gameItem == GameItem.Gem)
         {
-            spriteRenderer.color = Color.red;
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = Color.red;
+            }
         }
         else if (gameItem == GameItem.Key)
         {
