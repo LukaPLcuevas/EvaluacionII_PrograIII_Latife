@@ -166,6 +166,10 @@ PrefabInstance:
       value: MovingPlatformB
       objectReference: {fileID: 0}
     - target: {fileID: 3858805181162960123, guid: 8cd5fa5157c1e44809c0c9fd3b48652c, type: 3}
+      propertyPath: speed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3858805181162960123, guid: 8cd5fa5157c1e44809c0c9fd3b48652c, type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 197953937}
@@ -792,6 +796,10 @@ PrefabInstance:
     - target: {fileID: 2940738842497727804, guid: 8cd5fa5157c1e44809c0c9fd3b48652c, type: 3}
       propertyPath: m_Name
       value: MovingPlatformA
+      objectReference: {fileID: 0}
+    - target: {fileID: 3858805181162960123, guid: 8cd5fa5157c1e44809c0c9fd3b48652c, type: 3}
+      propertyPath: speed
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3858805181162960123, guid: 8cd5fa5157c1e44809c0c9fd3b48652c, type: 3}
       propertyPath: target
