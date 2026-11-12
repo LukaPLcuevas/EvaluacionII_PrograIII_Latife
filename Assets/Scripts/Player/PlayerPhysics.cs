@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +11,7 @@ public enum PlayerState
     Jumping,
     Firing,
     Hurt,
+    Stun,
 }
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -20,14 +22,22 @@ public class PlayerPhysics : MonoBehaviour
     [SerializeField] Rigidbody2D rigidBody2D;
     [SerializeField] float jumpSpeed;
     [SerializeField] float hurtJumpSpeed;
+    
+    [Header("Stun")]
+    [SerializeField] SpriteRenderer spriteRenderer;
+    [SerializeField] float stunTime;
+    public bool isStunned;
+    
     [Header("Grounded")]
     [SerializeField] Vector2 groundCheckOffset;
     [SerializeField] Vector2 groundCheckSize;
     [SerializeField] LayerMask groundMask;
+    
     [Header("Inputs")]
     [SerializeField] InputActionReference moveInput;
     [SerializeField] InputActionReference jumpInput;
     [SerializeField] InputActionReference fireInput;
+    
     [Header("Bullet")]
     [SerializeField] Transform bulletSpawner;
     [SerializeField] Bullet bulletPrefab;
@@ -41,6 +51,21 @@ public class PlayerPhysics : MonoBehaviour
     bool canJump;
     int direction;
     Vector2 bulletSpawnerInitialPosition;
+    
+    
+    WaitForSeconds stunWaitTimer;
+    WaitForSeconds StunWaitTimer
+    {
+        get
+        {
+            if (stunWaitTimer == null)
+            {
+                stunWaitTimer = new WaitForSeconds(stunTime);
+            }
+
+            return stunWaitTimer;
+        }
+    }
 
     StateMachine stateMachine;
     State idleState;
@@ -48,6 +73,7 @@ public class PlayerPhysics : MonoBehaviour
     State jumpingState;
     State firingState;
     State hurtState;
+    State stunState;
 
     void Awake()
     {
@@ -77,6 +103,11 @@ public class PlayerPhysics : MonoBehaviour
     void OnDisable()
     {
         stateMachine.Stop();
+    }
+
+    void OnDestroy()
+    {
+        StopAllCoroutines();
     }
 
     State CreateState(PlayerState playerState, Action onEnter, Action onUpdate, Action onExit)
@@ -237,8 +268,15 @@ public class PlayerPhysics : MonoBehaviour
 
     void PerformedMoveHandler(InputAction.CallbackContext ctx)
     {
-        var moveVector = ctx.ReadValue<Vector2>();
-        horizontalSpeed = moveVector.x * speed;
+        if (!isStunned)
+        {
+            var moveVector = ctx.ReadValue<Vector2>();
+            horizontalSpeed = moveVector.x * speed;
+        }
+        else
+        {
+            horizontalSpeed = 0.0f;
+        }
     }
 
     void CanceledMoveHandler(InputAction.CallbackContext ctx)
@@ -282,7 +320,10 @@ public class PlayerPhysics : MonoBehaviour
     {
         rigidBody2D.gravityScale = initialGravity * gravityModifier;
         rigidBody2D.linearVelocityX = velocity.x;
-
+        if (isStunned)
+        {
+            StunedHandler();
+        }
         CheckJumping();
         CheckGround();
     }
@@ -309,6 +350,22 @@ public class PlayerPhysics : MonoBehaviour
             ChangeState(PlayerState.Idle);
         }
         isGrounded = currentGroundedState;
+    }
+    
+    void StunedHandler()
+    {
+        ChangeState(PlayerState.Stun);
+        StartCoroutine(Stunned());
+    }
+
+    IEnumerator Stunned()
+    {
+        spriteRenderer.color = Color.yellow;
+        yield return StunWaitTimer;
+        
+        isStunned = false;
+        ChangeState(PlayerState.Idle);
+        spriteRenderer.color = Color.white;
     }
 
     void OnDrawGizmosSelected()
