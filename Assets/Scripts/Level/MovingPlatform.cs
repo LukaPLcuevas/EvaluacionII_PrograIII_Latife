@@ -14,8 +14,8 @@ public class MovingPlatform : MonoBehaviour
     
     float MyMoveTowards(float current, float target, float maxDelta)
     {
-        var move = (current - target) * maxDelta;
-        current = move;
+        var move = (current - target);
+        current = move * maxDelta;
         
         return current;
     }
